@@ -1,5 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
+import PropTypes from 'prop-types';
 import styleConstructor from './style';
 
 export interface DotProps {
@@ -39,3 +40,7 @@ const Dot = ({theme, marked, disabled, color, today, selected}: DotProps) => {
 };
 
 export default Dot;
+
+Dot.propTypes = {
+  marked: PropTypes.bool,
+}
