@@ -403,10 +403,9 @@ export default class AgendaView extends Component {
     const scrollPadPosition = (shouldAllowDragging ? HEADER_HEIGHT : openCalendarScrollPadPosition) - KNOB_HEIGHT;
     const scrollPadStyle = {
       position: 'absolute',
-      width: 80,
+      width: '100%',
       height: KNOB_HEIGHT,
-      top: scrollPadPosition,
-      left: (this.viewWidth - 80) / 2
+      top: scrollPadPosition
     };
 
     return (
