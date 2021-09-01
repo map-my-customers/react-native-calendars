@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import XDate from 'xdate';
 
 import React, {Component} from 'react';
-import {FlatList, ActivityIndicator, View} from 'react-native';
+import {FlatList, ActivityIndicator, View, RefreshControl} from 'react-native';
 
 import {extractComponentProps} from '../../component-updater';
 import dateutils from '../../dateutils';
@@ -45,7 +45,9 @@ class ReservationList extends Component {
     /** Set this true while waiting for new data from a refresh */
     refreshing: PropTypes.bool,
     /** If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make sure to also set the refreshing prop correctly */
-    onRefresh: PropTypes.func
+    onRefresh: PropTypes.func,
+    /** Custom footer component on the bottom of the agenda item list */
+    customFooter: PropTypes.func,
   };
 
   static defaultProps = {
@@ -55,7 +57,7 @@ class ReservationList extends Component {
 
   constructor(props) {
     super(props);
-
+    this.refreshing = true
     this.style = styleConstructor(props.theme);
 
     this.state = {
@@ -137,6 +139,7 @@ class ReservationList extends Component {
     const iterator = parseDate(
       this.props.selectedDay.clone().getTime() - 3600 * 24 * 10 * 1000,
     );
+    this.refreshing = false
     let reservations = [];
     for (let i = 0; i < 10; i++) {
       const res = this.getReservationsForDay(iterator, this.props);
@@ -156,17 +159,7 @@ class ReservationList extends Component {
     this.setState(
       {
         reservations,
-      },
-      () => {
-        setTimeout(() => {
-          let h = 0;
-          for (let i = 0; i < scrollPosition; i++) {
-            h += this.heights[i] || 0;
-          }
-          this.list.scrollToOffset({offset: h, animated: false});
-          this.props.onDayChange(selectedDay, false);
-        }, 100);
-      },
+      }
     );
   };
 
@@ -275,25 +268,35 @@ class ReservationList extends Component {
     }
 
     return (
-      <FlatList
-        ref={c => (this.list = c)}
-        style={style}
-        contentContainerStyle={this.style.content}
-        data={this.state.reservations}
-        renderItem={this.renderRow}
-        keyExtractor={this.keyExtractor}
-        showsVerticalScrollIndicator={false}
-        scrollEventThrottle={200}
-        onMoveShouldSetResponderCapture={this.onMoveShouldSetResponderCapture}
-        onScroll={this.onScroll}
-        refreshControl={this.props.refreshControl}
-        refreshing={this.props.refreshing}
-        onRefresh={this._onRefresh}
-        onScrollBeginDrag={this.props.onScrollBeginDrag}
-        onScrollEndDrag={this.props.onScrollEndDrag}
-        onMomentumScrollBegin={this.props.onMomentumScrollBegin}
-        onMomentumScrollEnd={this.props.onMomentumScrollEnd}
-      />
+      <View>
+        <FlatList
+          ref={c => (this.list = c)}
+          style={style}
+          contentContainerStyle={this.style.content}
+          data={this.state.reservations}
+          renderItem={this.renderRow}
+          keyExtractor={this.keyExtractor}
+          showsVerticalScrollIndicator={false}
+          scrollEventThrottle={200}
+          onMoveShouldSetResponderCapture={this.onMoveShouldSetResponderCapture}
+          onScroll={this.onScroll}
+          refreshControl={
+            this.props.refreshControl?.(this.props.refreshing) ?? (<RefreshControl 
+              title={'Pull down to load earlier activities'} 
+              tintColor={'#3063e4'} colors={['#3063E4']} 
+              titleColor={'#3F4659'}
+              size={10}
+              refreshing={this.props.refreshing && this.refreshing}
+              onRefresh={this._onRefresh}  
+            />)
+          }
+          onScrollBeginDrag={this.props.onScrollBeginDrag}
+          onScrollEndDrag={this.props.onScrollEndDrag}
+          onMomentumScrollBegin={this.props.onMomentumScrollBegin}
+          onMomentumScrollEnd={this.props.onMomentumScrollEnd}
+        />
+        {this.props.customFooter?.()}
+      </View>
     );
   }
 }
