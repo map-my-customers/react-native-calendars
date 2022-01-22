@@ -35,7 +35,9 @@
     "memoize-one": "^5.2.1",
     "prop-types": "^15.5.10",
     "react-native-swipe-gestures": "^1.0.5",
-    "xdate": "^0.8.0"
+    "xdate": "^0.8.0",
+    "react-native-bidirectional-infinite-scroll": "^0.4.0-dev.1",
+    "@stream-io/flat-list-mvcp": "^0.11.0-dev.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
