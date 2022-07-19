@@ -285,7 +285,7 @@ class ReservationList extends Component {
               title={'Pull down to load earlier activities'} 
               tintColor={'#3063e4'} colors={['#3063E4']} 
               titleColor={'#3F4659'}
-              size={10}
+              size={'large'}
               refreshing={this.props.refreshing && this.refreshing}
               onRefresh={this._onRefresh}  
             />)
